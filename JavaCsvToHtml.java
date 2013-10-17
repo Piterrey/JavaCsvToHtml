@@ -39,63 +39,19 @@ class MainFrame extends JFrame{
         btnEsegui.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
-                File fileIn = new File(txtFileIn.getText());
-
-                FileHTML html = new FileHTML(txtFileOut.getText());
-                html.createHTML(fileIn);
-                html.close();
-
+                PrintWriter fileOut = new null;
+                Scanner scanner = null;
+                try{
+                    scanner = new Scanner(new File(txtFileIn.getText()));
+                    fileOut = new PrintWriter(txtFileOut.getText());
+                }catch (FileNotFoundException e){   };
+        
+                while (scanner.hasNext()){
+                    String row = scanner.nextLine();
+                    fileOut.println(row+"\n");
+                }
+                scanner.close();
             }
-        });
-    }
-}
-
-class FileHTML{
-    private PrintWriter fileOut;
-
-    public FileHTML(String path){
-        try{
-            this.fileOut = new PrintWriter(path);
         }
-        catch (FileNotFoundException e) {   }
-    }
-
-    public void createHTML(File input){
-        HeaderHTML();
-        BodyHTML(input);
-        FooterHTML();
-    }
-
-    public void close(){
-        this.fileOut.close();
-    }
-
-    private void HeaderHTML(){
-        fileOut.println("<!DOCTYPE html><html><header><title>Tabella da CSV</title><link rel=\"stylesheet\" type=\"text/css\" href=\"./base.css\"></header><body><table>");
-        fileOut.flush();
-    }
-
-    private void FooterHTML(){
-        fileOut.println("</table></body></html>");
-        fileOut.flush();
-    }
-
-    private void BodyHTML(File input){
-        Scanner scanner = null;
-        try{
-            scanner = new Scanner(input);
-        }catch (FileNotFoundException e){   };
-
-        while (scanner.hasNext()){
-            String row = scanner.nextLine();
-            fileOut.println("<tr>");
-            String[] fields = row.split(";");
-            for(String field:fields){
-                fileOut.format("<td>%s</td>",field);
-            }
-            fileOut.println("</tr>");
-        }
-        scanner.close();
-        fileOut.flush();
     }
 }
